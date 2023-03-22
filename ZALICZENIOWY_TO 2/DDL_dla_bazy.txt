@@ -1,0 +1,123 @@
+-- zaliczeniowy_to.person definition
+
+CREATE TABLE `person` (
+  `name` varchar(100) NOT NULL,
+  `surname` varchar(100) NOT NULL,
+  `person_id` int NOT NULL AUTO_INCREMENT,
+  `birth_date` date NOT NULL,
+  `date_of_death` date DEFAULT NULL,
+  `is_polish_resident` int NOT NULL,
+  PRIMARY KEY (`person_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- zaliczeniowy_to.physical_certificate definition
+
+CREATE TABLE `physical_certificate` (
+  `physical_certificate_id` int NOT NULL AUTO_INCREMENT,
+  `person_id_fk` int NOT NULL,
+  `release_date` date NOT NULL,
+  `decision` int NOT NULL,
+  PRIMARY KEY (`physical_certificate_id`),
+  KEY `physical_certificate_FK` (`person_id_fk`),
+  CONSTRAINT `physical_certificate_FK` FOREIGN KEY (`person_id_fk`) 
+REFERENCES `person` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- zaliczeniowy_to.police_register definition
+
+CREATE TABLE `police_register` (
+  `police_register_id` int NOT NULL AUTO_INCREMENT,
+  `person_id_fk` int NOT NULL,
+  PRIMARY KEY (`police_register_id`),
+  KEY `police_register_FK` (`person_id_fk`),
+  CONSTRAINT `police_register_FK` FOREIGN KEY (`person_id_fk`) REFERENCES 
+`person` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- zaliczeniowy_to.psychical_certificate definition
+
+CREATE TABLE `psychical_certificate` (
+  `psychical_certificate_id` int NOT NULL AUTO_INCREMENT,
+  `person_id_fk` int NOT NULL,
+  `release_date` date NOT NULL,
+  `decision` int NOT NULL,
+  PRIMARY KEY (`psychical_certificate_id`),
+  KEY `psychical_certificate_FK` (`person_id_fk`),
+  CONSTRAINT `psychical_certificate_FK` FOREIGN KEY (`person_id_fk`) 
+REFERENCES `person` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- zaliczeniowy_to.gun_certificate definition
+
+CREATE TABLE `gun_certificate` (
+  `gun_certificate_id` int NOT NULL AUTO_INCREMENT,
+  `physical_certificate_number_fk` int NOT NULL,
+  `psychical_certificate_number_fk` int NOT NULL,
+  `person_id_fk` int NOT NULL,
+  `release_date` date NOT NULL,
+  PRIMARY KEY (`gun_certificate_id`),
+  KEY `gun_certificate_FK_1` (`psychical_certificate_number_fk`),
+  KEY `gun_certificate_FK_2` (`person_id_fk`),
+  KEY `gun_certificate_FK` (`physical_certificate_number_fk`),
+  CONSTRAINT `gun_certificate_FK` FOREIGN KEY 
+(`physical_certificate_number_fk`) REFERENCES `physical_certificate` 
+(`physical_certificate_id`),
+  CONSTRAINT `gun_certificate_FK_1` FOREIGN KEY 
+(`psychical_certificate_number_fk`) REFERENCES `psychical_certificate` 
+(`psychical_certificate_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `gun_certificate_FK_2` FOREIGN KEY (`person_id_fk`) 
+REFERENCES `person` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- zaliczeniowy_to.gun_registry definition
+
+CREATE TABLE `gun_registry` (
+  `gun_registry_id` int NOT NULL AUTO_INCREMENT,
+  `gun_number` int NOT NULL,
+  `person_id_fk` int NOT NULL,
+  `gun_certificate_number_fk` int NOT NULL,
+  `release_date` date NOT NULL,
+  `storing_place` varchar(100) CHARACTER SET utf8mb4 COLLATE 
+utf8mb4_0900_ai_ci DEFAULT NULL,
+  `is_owner_alive` int DEFAULT NULL,
+  PRIMARY KEY (`gun_registry_id`),
+  KEY `gun_registry_FK` (`person_id_fk`),
+  KEY `gun_registry_FK_1` (`gun_certificate_number_fk`),
+  CONSTRAINT `gun_registry_FK` FOREIGN KEY (`person_id_fk`) REFERENCES 
+`person` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `gun_registry_FK_1` FOREIGN KEY (`gun_certificate_number_fk`) 
+REFERENCES `gun_certificate` (`gun_certificate_id`) ON DELETE CASCADE ON 
+UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- zaliczeniowy_to.gun_buying_certificate definition
+
+CREATE TABLE `gun_buying_certificate` (
+  `gun_buying_certificate_id` int NOT NULL AUTO_INCREMENT,
+  `gun_type` int NOT NULL,
+  `number_of_guns` int NOT NULL,
+  `ammo_type` int NOT NULL,
+  `person_id_fk` int NOT NULL,
+  `gun_certificate_number_fk` int NOT NULL,
+  PRIMARY KEY (`gun_buying_certificate_id`),
+  KEY `gun_buying_certificate_FK` (`person_id_fk`),
+  KEY `gun_buying_certificate_FK_1` (`gun_certificate_number_fk`),
+  CONSTRAINT `gun_buying_certificate_FK` FOREIGN KEY (`person_id_fk`) 
+REFERENCES `person` (`person_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `gun_buying_certificate_FK_1` FOREIGN KEY 
+(`gun_certificate_number_fk`) REFERENCES `gun_certificate` 
+(`gun_certificate_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 
+COLLATE=utf8mb4_0900_ai_ci;
